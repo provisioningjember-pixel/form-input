@@ -3,44 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Input Data - Vercel & Firebase</title>
+    <title>Aplikasi Input Data Penduduk</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .page-section { display: none; }
+        .page-active { display: block; }
+    </style>
 </head>
 <body class="bg-light p-4">
-    <div class="container" style="max-width: 500px;">
-        <h3 class="mb-4 text-center">Input Data Tasks</h3>
 
-        <!-- Tempat Notifikasi Berhasil / Gagal -->
+    <div class="container" style="max-width: 550px;">
+        <!-- Tempat Notifikasi -->
         <div id="alertBox"></div>
 
-        <!-- Form Input -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <form id="taskForm">
-                    <div class="mb-3">
-                        <label class="form-label">Nama Tugas</label>
-                        <input type="text" id="namaTugas" class="form-control" placeholder="Masukkan nama tugas..." required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea id="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi..." required></textarea>
-                    </div>
-                    <button type="submit" id="btnSubmit" class="btn btn-primary w-100">Simpan Data</button>
-                </form>
+        <!-- ================= HALAMAN 1: LOGIN ================= -->
+        <div id="pageLogin" class="page-section page-active">
+            <h3 class="mb-4 text-center">Login Sistem</h3>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="loginUser" class="form-control" placeholder="Masukkan username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="loginPass" class="form-control" placeholder="Masukkan password" required>
+                        </div>
+                        <button type="submit" id="btnLogin" class="btn btn-primary w-100 mb-3">Login</button>
+                        <hr>
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="showPage('pageRegister')">Add User (Daftar Akun Baru)</button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <!-- Tempat Menampilkan Data -->
-        <h4 class="mb-3">Daftar Tugas</h4>
-        <ul id="taskList" class="list-group shadow-sm">
-            <li class="list-group-item text-muted text-center">Memuat data...</li>
-        </ul>
+        <!-- ================= HALAMAN 2: ADD USER / REGISTRASI ================= -->
+        <div id="pageRegister" class="page-section">
+            <h3 class="mb-4 text-center">Add User Baru</h3>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username Baru</label>
+                            <input type="text" id="regUser" class="form-control" placeholder="Buat username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="regPass" class="form-control" placeholder="Buat password" required>
+                        </div>
+                        <button type="submit" id="btnRegister" class="btn btn-success w-100 mb-3">Simpan User Baru</button>
+                        <button type="button" class="btn btn-link w-100 text-decoration-none" onclick="showPage('pageLogin')">Kembali ke Form Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 3: FORM INPUT DATA ================= -->
+        <div id="pageInput" class="page-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Input Data Penduduk</h3>
+                <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Form Input -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form id="dataForm">
+                        <div class="mb-3">
+                            <label class="form-label">NIK (Nomor Induk Kependudukan)</label>
+                            <input type="number" id="nik" class="form-control" placeholder="Masukkan NIK 16 digit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select id="jenisKelamin" class="form-select" required>
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alamat Lengkap</label>
+                            <textarea id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap..." required></textarea>
+                        </div>
+                        <button type="submit" id="btnSimpanData" class="btn btn-primary w-100">Simpan Data Penduduk</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabel / Daftar Data -->
+            <h4 class="mb-3">Daftar Data Penduduk</h4>
+            <div class="card shadow-sm">
+                <ul id="dataList" class="list-group list-group-flush">
+                    <li class="list-group-item text-muted text-center">Memuat data...</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK (Version 10) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Konfigurasi Firebase milikmu
         const firebaseConfig = {
@@ -52,86 +120,166 @@
             appId: "1:105974451173:web:d2976fc5ed60dad0d23d0c"
         };
 
-        // Inisialisasi Firebase & Firestore
+        // Inisialisasi Firebase & Collections
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const tasksCollection = collection(db, "tasks");
+        
+        // Dua Koleksi Utama (Tabel 1: users, Tabel 2: data_penduduk)
+        const usersCollection = collection(db, "users");
+        const pendudukCollection = collection(db, "data_penduduk");
 
-        const taskForm = document.getElementById("taskForm");
-        const btnSubmit = document.getElementById("btnSubmit");
-        const alertBox = document.getElementById("alertBox");
-
-        // Fungsi Tampilkan Notifikasi
+        // Helper Tampil Notifikasi
         function showAlert(message, type) {
+            const alertBox = document.getElementById("alertBox");
             alertBox.innerHTML = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                     ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
         }
 
-        // 1. Simpan Data ke Firebase dengan Notifikasi
-        taskForm.addEventListener("submit", async (e) => {
+        // Navigasi Antar Halaman
+        window.showPage = function(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('page-active'));
+            document.getElementById(pageId).classList.add('page-active');
+            document.getElementById("alertBox").innerHTML = ""; // bersihkan alert
+        }
+
+        window.logout = function() {
+            showPage('pageLogin');
+            showAlert("Anda telah logout.", "info");
+        }
+
+        // 1. PROSES ADD USER (REGISTRASI)
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
             e.preventDefault();
+            const username = document.getElementById("regUser").value.trim();
+            const password = document.getElementById("regPass").value.trim();
+            const btn = document.getElementById("btnRegister");
 
-            const namaTugas = document.getElementById("namaTugas").value;
-            const deskripsi = document.getElementById("deskripsi").value;
-
-            // Ubah tombol jadi loading
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Menyimpan...";
+            btn.disabled = true;
+            btn.innerText = "Proses Menyimpan...";
 
             try {
-                await addDoc(tasksCollection, {
-                    nama_tugas: namaTugas,
-                    deskripsi: deskripsi,
+                // Cek apakah username sudah dipakai
+                const q = query(usersCollection, where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    showAlert("Username sudah terdaftar! Pilih username lain.", "warning");
+                } else {
+                    // Simpan user baru ke Firebase (Tabel 'users')
+                    await addDoc(usersCollection, {
+                        username: username,
+                        password: password,
+                        created_at: new Date()
+                    });
+                    
+                    document.getElementById("registerForm").reset();
+                    showPage('pageLogin');
+                    showAlert("<strong>Berhasil!</strong> User baru dibuat. Silakan login.", "success");
+                }
+            } catch (error) {
+                showAlert(`Gagal menambah user: ${error.message}`, "danger");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Simpan User Baru";
+            }
+        });
+
+        // 2. PROSES LOGIN
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("loginUser").value.trim();
+            const password = document.getElementById("loginPass").value.trim();
+            const btn = document.getElementById("btnLogin");
+
+            btn.disabled = true;
+            btn.innerText = "Memeriksa...";
+
+            try {
+                // Cari user berdasarkan username & password
+                const q = query(usersCollection, where("username", "==", username), where("password", "==", password));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    document.getElementById("loginForm").reset();
+                    showPage('pageInput');
+                    showAlert(`Selamat datang, <strong>${username}</strong>!`, "success");
+                    loadDataPenduduk(); // Muat data penduduk
+                } else {
+                    showAlert("Username atau Password salah!", "danger");
+                }
+            } catch (error) {
+                showAlert(`Error saat login: ${error.message}`, "danger");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Login";
+            }
+        });
+
+        // 3. PROSES SIMPAN DATA PENDUDUK
+        document.getElementById("dataForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const nik = document.getElementById("nik").value;
+            const nama = document.getElementById("nama").value;
+            const jenisKelamin = document.getElementById("jenisKelamin").value;
+            const alamat = document.getElementById("alamat").value;
+            const btn = document.getElementById("btnSimpanData");
+
+            btn.disabled = true;
+            btn.innerText = "Menyimpan Data...";
+
+            try {
+                // Simpan ke Firestore (Tabel 'data_penduduk')
+                await addDoc(pendudukCollection, {
+                    nik: nik,
+                    nama: nama,
+                    jenis_kelamin: jenisKelamin,
+                    alamat: alamat,
                     created_at: new Date()
                 });
 
-                // Tampilkan notifikasi sukses
-                showAlert("<strong>Berhasil!</strong> Data berhasil disimpan ke Firebase.", "success");
-                taskForm.reset();
+                showAlert("<strong>Berhasil!</strong> Data penduduk tersimpan.", "success");
+                document.getElementById("dataForm").reset();
             } catch (error) {
-                console.error("Error menambah data: ", error);
-                // Tampilkan notifikasi gagal
-                showAlert(`<strong>Gagal!</strong> Data tidak tersimpan: ${error.message}`, "danger");
+                showAlert(`Gagal menyimpan data: ${error.message}`, "danger");
             } finally {
-                // Kembalikan tombol ke kondisi semula
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Simpan Data";
+                btn.disabled = false;
+                btn.innerText = "Simpan Data Penduduk";
             }
         });
 
-        // 2. Baca Data Realtime dari Firebase
-        onSnapshot(tasksCollection, (snapshot) => {
-            const taskList = document.getElementById("taskList");
-            taskList.innerHTML = "";
+        // 4. MEMBACA DATA PENDUDUK (REALTIME)
+        function loadDataPenduduk() {
+            onSnapshot(pendudukCollection, (snapshot) => {
+                const dataList = document.getElementById("dataList");
+                dataList.innerHTML = "";
 
-            if (snapshot.empty) {
-                taskList.innerHTML = `<li class="list-group-item text-muted text-center">Belum ada data tugas.</li>`;
-                return;
-            }
+                if (snapshot.empty) {
+                    dataList.innerHTML = `<li class="list-group-item text-muted text-center">Belum ada data penduduk.</li>`;
+                    return;
+                }
 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const item = `
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">${data.nama_tugas}</div>
-                            <small class="text-muted">${data.deskripsi}</small>
-                        </div>
-                    </li>
-                `;
-                taskList.innerHTML += item;
+                snapshot.forEach((doc) => {
+                    const d = doc.data();
+                    const item = `
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong class="text-primary">${d.nama}</strong>
+                                <span class="badge bg-secondary">${d.jenis_kelamin}</span>
+                            </div>
+                            <small class="text-muted d-block">NIK: ${d.nik}</small>
+                            <small class="d-block mt-1">${d.alamat}</small>
+                        </li>
+                    `;
+                    dataList.innerHTML += item;
+                });
             });
-        }, (error) => {
-            console.error("Error membaca data: ", error);
-            showAlert("Gagal mengambil data dari Firebase. Cek Rules Firestore kamu!", "warning");
-        });
+        }
     </script>
 
-    <!-- JS Bootstrap untuk fitur menutup Alert -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
